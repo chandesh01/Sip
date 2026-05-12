@@ -32,7 +32,7 @@ Track daily water intake, view history, and receive hydration reminders througho
 
 ## Requirements
 
-- Android 8.0+
+- Android 10.0+
 - Android Studio Hedgehog or newer
 
 ## Running
