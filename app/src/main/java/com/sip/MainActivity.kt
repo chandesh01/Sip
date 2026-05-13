@@ -46,6 +46,9 @@ import com.sip.ui.home.HomeViewModel
 import com.sip.ui.settings.SettingsScreen
 import com.sip.ui.settings.SettingsViewModel
 
+import com.sip.ui.stats.StatsScreen
+import com.sip.ui.stats.StatsViewModel
+
 import com.sip.ui.theme.SipTheme
 
 class MainActivity : ComponentActivity() {
@@ -57,8 +60,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestNotificationPermission()
-
-
 
         setContent {
 
@@ -130,6 +131,41 @@ class MainActivity : ComponentActivity() {
                                             SettingsPreferences(
                                                 this@MainActivity
                                             )
+                                    ) as T
+                                }
+                            }
+                    )
+
+                /*
+                ---------------------------------------------------
+                STATS VIEWMODEL
+                ---------------------------------------------------
+                */
+
+                val statsViewModel:
+                        StatsViewModel =
+                    viewModel(
+
+                        factory =
+                            object :
+                                ViewModelProvider
+                                .Factory {
+
+                                @Suppress(
+                                    "UNCHECKED_CAST"
+                                )
+
+                                override fun
+                                        <T : ViewModel>
+                                        create(
+                                    modelClass:
+                                    Class<T>
+                                ): T {
+
+                                    return StatsViewModel(
+                                        waterDao =
+                                            app.database
+                                                .waterDao()
                                     ) as T
                                 }
                             }
@@ -232,8 +268,26 @@ class MainActivity : ComponentActivity() {
                                         historyEntries,
 
                                     onDeleteEntry = {
-                                        homeViewModel.deleteEntry(it)
+                                        homeViewModel
+                                            .deleteEntry(it)
                                     }
+                                )
+                            }
+
+                            /*
+                            ---------------------------------------------------
+                            STATS
+                            ---------------------------------------------------
+                            */
+
+                            SipScreen.STATS -> {
+
+                                StatsScreen(
+                                    paddingValues =
+                                        paddingValues,
+
+                                    viewModel =
+                                        statsViewModel
                                 )
                             }
 
@@ -269,27 +323,33 @@ class MainActivity : ComponentActivity() {
     private fun requestNotificationPermission() {
 
         if (
-            ContextCompat
-                .checkSelfPermission(
-                    this,
-                    Manifest.permission
-                        .POST_NOTIFICATIONS
-                ) !=
-            PackageManager.PERMISSION_GRANTED
+            Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.TIRAMISU
         ) {
 
-            ActivityCompat
-                .requestPermissions(
-
-                    this,
-
-                    arrayOf(
+            if (
+                ContextCompat
+                    .checkSelfPermission(
+                        this,
                         Manifest.permission
                             .POST_NOTIFICATIONS
-                    ),
+                    ) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
 
-                    100
-                )
+                ActivityCompat
+                    .requestPermissions(
+
+                        this,
+
+                        arrayOf(
+                            Manifest.permission
+                                .POST_NOTIFICATIONS
+                        ),
+
+                        100
+                    )
+            }
         }
     }
 
@@ -299,7 +359,7 @@ class MainActivity : ComponentActivity() {
     ---------------------------------------------------
     */
 
-     fun requestExactAlarmPermission() {
+    fun requestExactAlarmPermission() {
 
         if (
             Build.VERSION.SDK_INT >=
@@ -331,7 +391,7 @@ class MainActivity : ComponentActivity() {
     ---------------------------------------------------
     */
 
-     fun requestBatteryOptimizationDisable() {
+    fun requestBatteryOptimizationDisable() {
 
         val powerManager =
             getSystemService(
@@ -347,6 +407,7 @@ class MainActivity : ComponentActivity() {
 
             val intent = Intent(
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+
                 Uri.parse(
                     "package:$packageName"
                 )

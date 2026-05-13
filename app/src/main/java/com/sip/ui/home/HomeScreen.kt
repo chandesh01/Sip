@@ -1,31 +1,17 @@
 package com.sip.ui.home
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,14 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.sip.R
-import com.sip.ui.components.QuickAddButton
+import com.sip.ui.components.QuickAddTile
+import com.sip.ui.components.cards.SipCard
+import com.sip.ui.components.inputs.SelectionPill
+import com.sip.ui.components.layout.ScreenContainer
+import com.sip.ui.components.layout.ScreenHeader
+import com.sip.ui.theme.SipShapes
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -65,10 +55,6 @@ fun HomeScreen(
         )
     }
 
-    var showPeriodMenu by remember {
-        mutableStateOf(false)
-    }
-
     /*
     ---------------------------------------------------
     CUSTOM DIALOG
@@ -76,10 +62,12 @@ fun HomeScreen(
     */
 
     var showCustomDialog by remember {
+
         mutableStateOf(false)
     }
 
     var customAmount by remember {
+
         mutableStateOf("")
     }
 
@@ -128,14 +116,17 @@ fun HomeScreen(
         )
     }
 
-    val todayDate =
+    val todayDate = remember {
+
         formatter.format(
             Calendar
                 .getInstance()
                 .time
         )
+    }
 
-    val weekStartDate =
+    val weekStartDate = remember {
+
         formatter.format(
 
             Calendar.getInstance().apply {
@@ -150,8 +141,10 @@ fun HomeScreen(
 
             }.time
         )
+    }
 
-    val monthStartDate =
+    val monthStartDate = remember {
+
         formatter.format(
 
             Calendar.getInstance().apply {
@@ -163,6 +156,7 @@ fun HomeScreen(
 
             }.time
         )
+    }
 
     /*
     ---------------------------------------------------
@@ -187,14 +181,17 @@ fun HomeScreen(
         when (selectedPeriod) {
 
             DashboardPeriod.DAY -> {
+
                 todayDate
             }
 
             DashboardPeriod.WEEK -> {
+
                 "$weekStartDate - $todayDate"
             }
 
             DashboardPeriod.MONTH -> {
+
                 "$monthStartDate - $todayDate"
             }
         }
@@ -215,7 +212,10 @@ fun HomeScreen(
     val progress =
         if (dailyGoal > 0) {
 
-            (todayTotal.toFloat() / dailyGoal.toFloat())
+            (
+                    todayTotal.toFloat() /
+                            dailyGoal.toFloat()
+                    )
                 .coerceIn(0f, 1f)
 
         } else {
@@ -223,21 +223,26 @@ fun HomeScreen(
             0f
         }
 
+    val percentage =
+        if (dailyGoal > 0) {
+
+            (
+                    (todayTotal * 100) /
+                            dailyGoal.toInt()
+                    )
+                .coerceAtMost(100)
+
+        } else {
+
+            0
+        }
+
     val subtitle =
         when (selectedPeriod) {
 
             DashboardPeriod.DAY -> {
 
-                if (dailyGoal > 0) {
-
-                    "Goal: $dailyGoal ml • ${
-                        (todayTotal * 100) / dailyGoal.toInt()
-                    }%"
-
-                } else {
-
-                    "Goal: $dailyGoal ml"
-                }
+                "Goal: $dailyGoal ml • $percentage%"
             }
 
             DashboardPeriod.WEEK -> {
@@ -257,14 +262,8 @@ fun HomeScreen(
     ---------------------------------------------------
     */
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp),
-
-        verticalArrangement =
-            Arrangement.spacedBy(20.dp)
+    ScreenContainer(
+        paddingValues = paddingValues
     ) {
 
         /*
@@ -275,164 +274,28 @@ fun HomeScreen(
 
         item {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
+            ScreenHeader(
+                title = "Sip",
 
-                horizontalArrangement =
-                    Arrangement.SpaceBetween,
+                trailingContent = {
 
-                verticalAlignment =
-                    Alignment.CenterVertically
-            ) {
+                    SelectionPill(
+                        selectedItem = selectedPeriod,
 
-                Text(
-                    text = "Sip",
+                        items =
+                            DashboardPeriod.entries,
 
-                    style = MaterialTheme
-                        .typography
-                        .headlineLarge
-                )
+                        label = {
+                            it.label
+                        },
 
-                Box(
-                    modifier = Modifier
-                        .clip(
-                            RoundedCornerShape(24.dp)
-                        )
-                        .clickable {
-                            showPeriodMenu = true
+                        onItemSelected = {
+
+                            selectedPeriod = it
                         }
-                ) {
-
-                    Surface(
-
-                        shape =
-                            RoundedCornerShape(24.dp),
-
-                        tonalElevation = 2.dp,
-
-                        color =
-                            MaterialTheme
-                                .colorScheme
-                                .surfaceVariant,
-
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-
-                                color =
-                                    MaterialTheme
-                                        .colorScheme
-                                        .outlineVariant,
-
-                                shape =
-                                    RoundedCornerShape(24.dp)
-                            )
-                    ) {
-
-                        Row(
-
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 18.dp,
-                                    vertical = 12.dp
-                                ),
-
-                            verticalAlignment =
-                                Alignment.CenterVertically,
-
-                            horizontalArrangement =
-                                Arrangement.spacedBy(6.dp)
-                        ) {
-
-                            Text(
-                                text =
-                                    when (selectedPeriod) {
-
-                                        DashboardPeriod.DAY ->
-                                            "Today"
-
-                                        DashboardPeriod.WEEK ->
-                                            "1 Week"
-
-                                        DashboardPeriod.MONTH ->
-                                            "1 Month"
-                                    },
-
-                                style = MaterialTheme
-                                    .typography
-                                    .titleSmall
-                            )
-
-                            Icon(
-                                imageVector =
-                                    Icons.Default
-                                        .ArrowDropDown,
-
-                                contentDescription = null,
-
-                                modifier = Modifier
-                                    .size(18.dp)
-                            )
-                        }
-                    }
-
-                    DropdownMenu(
-                        expanded = showPeriodMenu,
-
-                        onDismissRequest = {
-                            showPeriodMenu = false
-                        }
-                    ) {
-
-                        DropdownMenuItem(
-
-                            text = {
-                                Text("Today")
-                            },
-
-                            onClick = {
-
-                                showPeriodMenu = false
-
-                                selectedPeriod =
-                                    DashboardPeriod.DAY
-                            }
-                        )
-
-                        DropdownMenuItem(
-
-                            text = {
-                                Text("1 Week")
-                            },
-
-                            onClick = {
-
-                                showPeriodMenu = false
-
-                                selectedPeriod =
-                                    DashboardPeriod.WEEK
-                            }
-                        )
-
-                        DropdownMenuItem(
-
-                            text = {
-                                Text("1 Month")
-                            },
-
-                            onClick = {
-
-                                showPeriodMenu = false
-
-                                selectedPeriod =
-                                    DashboardPeriod.MONTH
-                            }
-                        )
-                    }
+                    )
                 }
-            }
+            )
         }
 
         /*
@@ -443,43 +306,41 @@ fun HomeScreen(
 
         item {
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-
-                shape = RoundedCornerShape(32.dp)
-            ) {
+            SipCard {
 
                 Column(
-                    modifier = Modifier
-                        .padding(24.dp),
 
                     verticalArrangement =
-                        Arrangement.spacedBy(14.dp)
+                        Arrangement.spacedBy(
+                            14.dp
+                        )
                 ) {
 
                     Text(
                         text = title,
 
-                        style = MaterialTheme
-                            .typography
-                            .titleMedium
+                        style =
+                            MaterialTheme
+                                .typography
+                                .titleMedium
                     )
 
                     Text(
                         text = dateRange,
 
-                        style = MaterialTheme
-                            .typography
-                            .bodySmall
+                        style =
+                            MaterialTheme
+                                .typography
+                                .bodySmall
                     )
 
                     Text(
                         text = "$amount ml",
 
-                        style = MaterialTheme
-                            .typography
-                            .displayMedium
+                        style =
+                            MaterialTheme
+                                .typography
+                                .displayMedium
                     )
 
                     if (
@@ -488,26 +349,33 @@ fun HomeScreen(
                     ) {
 
                         LinearProgressIndicator(
+
                             progress = {
                                 progress
                             },
 
                             modifier = Modifier
                                 .fillMaxWidth()
+
+                                .height(8.dp)
+
                                 .clip(
-                                    RoundedCornerShape(
-                                        999.dp
-                                    )
-                                )
+                                    SipShapes.Pill
+                                ),
+
+                            drawStopIndicator = {},
+
+                            gapSize = 0.dp
                         )
                     }
 
                     Text(
                         text = subtitle,
 
-                        style = MaterialTheme
-                            .typography
-                            .bodyMedium
+                        style =
+                            MaterialTheme
+                                .typography
+                                .bodyMedium
                     )
                 }
             }
@@ -521,55 +389,147 @@ fun HomeScreen(
 
         item {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+            SipCard {
 
-                horizontalArrangement =
-                    Arrangement.spacedBy(12.dp)
-            ) {
+                Column(
 
-                QuickAddButton(
-                    text = "300 ml",
+                    verticalArrangement =
+                        Arrangement.spacedBy(
+                            18.dp
+                        )
+                ) {
 
-                    modifier = Modifier.weight(1f),
+                    Text(
+                        text = "Add Water",
 
-                    onClick = {
-                        viewModel.addWater(300)
+                        style =
+                            MaterialTheme
+                                .typography
+                                .titleLarge
+                    )
+
+                    LazyVerticalGrid(
+
+                        columns =
+                            GridCells.Fixed(4),
+
+                        horizontalArrangement =
+                            Arrangement.spacedBy(10.dp),
+
+                        verticalArrangement =
+                            Arrangement.spacedBy(10.dp),
+
+                        modifier = Modifier
+                            .height(170.dp),
+
+                        userScrollEnabled = false
+                    ) {
+
+                        item {
+
+                            QuickAddTile(
+                                title = "250",
+                                subtitle = "ml",
+
+                                onClick = {
+
+                                    viewModel.addWater(250)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "500",
+                                subtitle = "ml",
+
+                                onClick = {
+
+                                    viewModel.addWater(500)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "750",
+                                subtitle = "ml",
+
+                                onClick = {
+
+                                    viewModel.addWater(750)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "1 L",
+                                subtitle = "Bottle",
+
+                                onClick = {
+
+                                    viewModel.addWater(1000)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "1.5",
+                                subtitle = "L",
+
+                                onClick = {
+
+                                    viewModel.addWater(1500)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "2",
+                                subtitle = "L",
+
+                                onClick = {
+
+                                    viewModel.addWater(2000)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "Tea",
+                                subtitle = "200 ml",
+
+                                onClick = {
+
+                                    viewModel.addWater(200)
+                                }
+                            )
+                        }
+
+                        item {
+
+                            QuickAddTile(
+                                title = "+",
+                                subtitle = "Custom",
+
+                                onClick = {
+
+                                    showCustomDialog = true
+                                }
+                            )
+                        }
                     }
-                )
-
-                QuickAddButton(
-                    text = "500 ml",
-
-                    modifier = Modifier.weight(1f),
-
-                    onClick = {
-                        viewModel.addWater(500)
-                    }
-                )
-
-                QuickAddButton(
-                    text = "1 L",
-
-                    modifier = Modifier.weight(1f),
-
-                    onClick = {
-                        viewModel.addWater(1000)
-                    }
-                )
-
-                QuickAddButton(
-                    text = "",
-
-                    icon = Icons.Default.Edit,
-
-
-                    modifier = Modifier.weight(1f),
-
-                    onClick = {
-                        showCustomDialog = true
-                    }
-                )
+                }
             }
         }
     }
@@ -596,10 +556,12 @@ fun HomeScreen(
         AlertDialog(
 
             onDismissRequest = {
+
                 showCustomDialog = false
             },
 
-            shape = RoundedCornerShape(32.dp),
+            shape =
+                SipShapes.LargeCard,
 
             title = {
 
@@ -614,10 +576,12 @@ fun HomeScreen(
                     value = customAmount,
 
                     onValueChange = {
+
                         customAmount = it
                     },
 
                     placeholder = {
+
                         Text(
                             stringResource(
                                 R.string.enter_in_ml
@@ -627,7 +591,8 @@ fun HomeScreen(
 
                     singleLine = true,
 
-                    shape = RoundedCornerShape(20.dp),
+                    shape =
+                        SipShapes.Pill,
 
                     keyboardOptions =
                         KeyboardOptions(
@@ -658,16 +623,20 @@ fun HomeScreen(
 
                     onClick = {
 
-                        viewModel.addWater(amount!!)
+                        viewModel
+                            .addWater(amount!!)
 
                         customAmount = ""
 
-                        showCustomDialog = false
+                        showCustomDialog =
+                            false
                     }
                 ) {
 
                     Text(
-                        stringResource(R.string.ok)
+                        stringResource(
+                            R.string.ok
+                        )
                     )
                 }
             },
@@ -680,7 +649,8 @@ fun HomeScreen(
 
                         customAmount = ""
 
-                        showCustomDialog = false
+                        showCustomDialog =
+                            false
                     }
                 ) {
 

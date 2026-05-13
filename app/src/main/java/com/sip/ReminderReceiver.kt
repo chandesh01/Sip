@@ -90,12 +90,38 @@ class ReminderReceiver : BroadcastReceiver() {
 
             val isWithinRange =
 
-                if (startMinutes <= endMinutes) {
+                /*
+                ---------------------------------------------------
+                SAME START + END
+                ---------------------------------------------------
+                */
+
+                if (startMinutes == endMinutes) {
+
+                    true
+
+                }
+
+                /*
+                ---------------------------------------------------
+                NORMAL RANGE
+                ---------------------------------------------------
+                */
+
+                else if (startMinutes <= endMinutes) {
 
                     currentMinutes in
                             startMinutes..endMinutes
 
-                } else {
+                }
+
+                /*
+                ---------------------------------------------------
+                OVERNIGHT RANGE
+                ---------------------------------------------------
+                */
+
+                else {
 
                     currentMinutes in
                             startMinutes..1439 ||

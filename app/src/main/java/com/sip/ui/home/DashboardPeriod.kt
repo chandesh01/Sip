@@ -1,8 +1,18 @@
 package com.sip.ui.home
 
-enum class DashboardPeriod {
+enum class DashboardPeriod(
+    val label: String
+) {
 
-    DAY,
-    WEEK,
-    MONTH
+    DAY(
+        label = "Today"
+    ),
+
+    WEEK(
+        label = "1 Week"
+    ),
+
+    MONTH(
+        label = "1 Month"
+    )
 }
