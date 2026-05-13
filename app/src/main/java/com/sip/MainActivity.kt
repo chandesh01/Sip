@@ -1,54 +1,42 @@
 package com.sip
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
-
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Modifier
-
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
+import androidx.core.net.toUri
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-
 import com.sip.data.settings.SettingsPreferences
-
 import com.sip.ui.SipBottomNavigation
 import com.sip.ui.SipScreen
-
 import com.sip.ui.history.HistoryScreen
-
 import com.sip.ui.home.HomeScreen
 import com.sip.ui.home.HomeViewModel
-
 import com.sip.ui.settings.SettingsScreen
 import com.sip.ui.settings.SettingsViewModel
-
 import com.sip.ui.stats.StatsScreen
 import com.sip.ui.stats.StatsViewModel
-
 import com.sip.ui.theme.SipTheme
 
 class MainActivity : ComponentActivity() {
@@ -56,6 +44,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
+
+        installSplashScreen()
 
         super.onCreate(savedInstanceState)
 
@@ -391,6 +381,7 @@ class MainActivity : ComponentActivity() {
     ---------------------------------------------------
     */
 
+    @SuppressLint("BatteryLife")
     fun requestBatteryOptimizationDisable() {
 
         val powerManager =
@@ -408,9 +399,7 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
 
-                Uri.parse(
-                    "package:$packageName"
-                )
+                "package:$packageName".toUri()
             )
 
             startActivity(intent)

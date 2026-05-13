@@ -1,5 +1,8 @@
 [versions]
 agp = "9.1.1"
+composeBomVersion = "2025.04.01"
+coreSplashscreen = "1.2.0"
+coreSplashscreenVersion = "1.0.1"
 kotlin = "2.3.21"
 coreKtx = "1.18.0"
 junit = "4.13.2"
@@ -15,8 +18,11 @@ datastore = "1.2.1"
 
 [libraries]
 
+androidx-compose-bom-v20250401 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-core-splashscreen-v101 = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreenVersion" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -28,6 +34,7 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -36,6 +43,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+material3 = { module = "androidx.compose.material3:material3" }
 
 [plugins]
 

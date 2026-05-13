@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import com.sip.data.WaterDao
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -85,6 +86,7 @@ class StatsViewModel(
     ---------------------------------------------------
     */
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val stats: StateFlow<StatsSummaryUiState> =
 
         selectedRange
